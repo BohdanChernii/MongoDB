@@ -1,0 +1,154 @@
+db.users.find()
+db.users.find(
+  {gender: 'male', rating: 5},
+  // {_id: 0}
+  )
+
+db.users.find({_id: ObjectId('63184c4c7bc45822c09902b5')})
+
+db.users.find({
+  $or: [
+    {rating: 2},
+    {rating: 4},
+    {age: 20}]
+})
+
+db.users.find({
+  $and: [
+    {rating: 5},
+    {age: 25}]
+})
+
+// всі котрі мають вік   25 29 49
+db.users.find({
+  age: {$in: [25, 29, 49]}
+})
+
+// всі крім  25 29 49
+db.users.find({
+  age: {$nin: [25, 29, 49]}
+})
+
+// всі крім  25 29 49
+db.users.find({
+  age: {
+    $not: {
+      $in: [25, 29, 49]
+    }
+  }
+})
+
+// a на початку
+db.users.find({name: /^a/i})
+// a в кінці
+db.users.find({name: /a$/i})
+
+// 3 буква в імені t
+db.users.find(
+  {name: /^.{2}t/i},
+  {_id: 0, rating: 0}
+  )
+
+//чи є  v в імені
+db.users.find(
+  {name: /.*v.*/i}
+  )
+
+//в коло імя починається на N/n і закінчується на i
+db.users.find(
+  {name: /^n.*i$/i}
+  )
+
+db.users.find().sort({rating: 1, name: 1})
+
+db.users.find(
+  {
+    age: {$lt: 20}
+  })
+
+db.users.find(
+  {
+    age: {$lte: 12}
+  })
+
+db.users.find(
+  {
+    age: {$gt: 20}
+  })
+
+db.users.find(
+  {
+    age: {$gte: 12}
+  })
+
+
+db.users.find({
+  $and: [
+    {age: {$gte: 12}},
+    {age: {$lte: 20}}
+  ]
+})
+
+// вивести 5 елемент
+db.users.find().skip(4).limit(1)
+db.users.updateOne(
+  {_id: ObjectId('63184c4c7bc45822c09902b5')},
+  {$set: {name: 'Bohdan'}}
+  )
+
+db.users.updateMany(
+  {gender: 'male'},
+  {$set: {gender: 'men'}}
+  )
+
+db.users.updateMany({name: /.*i.*/i}, {$set: {gender: 'female'}})
+db.users.updateOne({name: 'Igor'}, {$set: {gender: 'men'}})
+
+db.users.find({parents: {$exists: 0}})
+db.users.find({parents: {$exists: null}})
+db.users.find({parents: {$exists: 1}})
+
+db.users.updateOne({_id: ObjectId('63184c4c7bc45822c09902b5')}, {$set: {parents: null}})
+// 1) Знайти всіх юзерів в кого вік менше за 20
+db.users.find(
+  {
+    age: {$lt: 20}
+  })
+
+//2) Знайти всіх юзерів в котрих хоча б один з батьків Tamara або Petro
+db.users.find({
+  $or: [
+    {parents: 'Tamara'},
+    {parents: 'Petro'}
+  ]
+})
+// 3) Знайти всіх юзерів які вивчають js
+db.users.find({studying: 'js'})
+// 4) Знайти всіх юзерів котрі вивчають тільки один предмет и додати їм java
+db.users.updateMany({studying: {$size: 2}}, {$push: {'studying': 'java'}})
+// 5) Знайти всіх юзерів номера будинків яких знаходяться в межах 1-20
+db.users.find({
+  $and: [
+    {'address.house': {$lte: 20}},
+    {'address.house': {$gte: 1}}
+  ]
+})
+// 6) Знайти всіх юзерів в яких назва вулиці містить пробіл
+db.users.find({
+  'address.street': /.* .*/
+})
+// 7) Видалити всіх юзерів в котрих немає поля studying
+db.users.deleteMany({studying: undefined})
+// 8) Знайти всіх юзерів в котрих в ім'я когось с батьків закінчується на 'na'
+db.users.find({
+  parents: /na$/
+})
+// 9) Всім юзерам котрі не вивчають python додати його
+db.users.updateMany({
+  studying: {$not: {$in: ['python']}}
+},
+  {
+    $push: {'studying': 'python'}
+  })
+// 10) Посортувати юзерів по рейтингу та по номеру квартири (що то що то, від більшого меншого)
+db.users.find().sort({rating: 1, 'address.flat': -1})
