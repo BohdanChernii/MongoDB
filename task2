@@ -36,15 +36,23 @@ db.students.find().sort({avgScore: -1}).limit(3)
 // 9) Знайти середній бал по школі
 db.students.aggregate([{
   $group: {
-    $avg: avgScore
+    _id: null,
+    avgInSchool: {
+      $avg: '$avgScore'
+    }
   }
-}])
+}, {
+  $project: {
+    _id: 0
+  }
+}
+])
 // 10) Знайти середній бал дітей які вивчають математику або фізику
 db.students.aggregate([{
   $group: {
     '_id': '$class',
     'avg': {
-      $sum: '$avgScore'
+      $avg: '$avgScore'
     }
   },
 },
@@ -72,6 +80,15 @@ db.students.find({
     $size: 1
   }
 })
+
+db.students.aggregate([{
+  $match:{
+    parents: {
+      $size: 1
+    }
+  }
+}])
+
 // 13) Знайти батьків які не працюють
 db.students.aggregate([{
 $match:{
